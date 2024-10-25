@@ -1,0 +1,10 @@
+// insert a document in the collection school
+
+// Get the database name from the arguments
+var dbname = process.
+
+// Connect to the specified database
+db =  connect("localhost:27017/" + dbname);
+
+// Insert the document into the 'school' collection
+db.school.insertOne({ name: "Holberton school" });
