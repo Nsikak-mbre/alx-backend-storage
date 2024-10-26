@@ -21,7 +21,6 @@ def update_topics(mongo_collection, name, topics):
     return mongo_collection.update_many(
         { "name": name },
         { "$set": { "topics": topics } },
-        upsert=False
     )
 
 if __name__ == "__main__":
