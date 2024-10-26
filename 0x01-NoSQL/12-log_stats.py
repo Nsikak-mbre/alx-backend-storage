@@ -5,6 +5,7 @@ Script to provide stats about Nginx logs stored in MongoDB.
 
 from pymongo import MongoClient
 
+
 def nginx_stats():
     client = MongoClient("mongodb://localhost:27017/")
     db = client.logs
@@ -15,10 +16,12 @@ def nginx_stats():
 
     # Count methods
     methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-    method_counts = {method: collection.count_documents({"method": method}) for method in methods}
+    method_counts = {method: collection.count_documents(
+        {"method": method}) for method in methods}
 
     # Count GET /status
-    status_check = collection.count_documents({"method": "GET", "path": "/status"})
+    status_check = collection.count_documents(
+        {"method": "GET", "path": "/status"})
 
     # Printing the results
     print(f"{total_logs} logs")
