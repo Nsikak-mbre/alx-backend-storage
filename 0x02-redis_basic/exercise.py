@@ -17,8 +17,8 @@ def count_calls(method: Callable) -> Callable:
     def wrapper(self, *args, **kwargs):
         # Increment the count for the method using the qualified name as the
         # key
-        self._redis.incr(method.__qualname__)
-        # Call the original method
+        key = f"{method.__qualname__}:count"
+        self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
 
@@ -36,6 +36,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store data in Redis with a randomly generated key.
@@ -57,10 +58,12 @@ class Cache:
 
         Args:
             key (str): The key to retrieve the data.
-            fn (Optional[Callable]): A callable to convert the data to the desired format.
+            fn (Optional[Callable]): A callable to convert
+            the data to the desired format.
 
         Returns:
-            Union[str, bytes, int, float, None]: The retrieved data in the desired format or None if the key does not exist.
+            Union[str, bytes, int, float, None]: The retrieved
+              data in the desired format or None if the key does not exist.
         """
         value = self._redis.get(key)
         if value is None:
@@ -83,7 +86,8 @@ class Cache:
 
     def get_int(self, key: str) -> int:
         """
-        Retrieve an integer value from Redis and convert it from bytes to an integer.
+        Retrieve an integer value from Redis and convert
+        it from bytes to an integer.
 
         Args:
             key (str): The key to retrieve the data.
