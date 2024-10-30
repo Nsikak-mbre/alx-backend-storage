@@ -15,11 +15,40 @@ def count_calls(method: Callable) -> Callable:
     """
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
-        # Increment the count for the method using the qualified name as the
-        # key
+        # Increment the count for the method
+        # using the qualified name as the key
         key = f"{method.__qualname__}:count"
-        self._redis.incr(key)
+        count = int(self._redis.get(key).decode(
+            'utf-8')) if self._redis.get(key) else 0
+        count += 1
+        self._redis.set(key, str(count).encode('utf-8'))
         return method(self, *args, **kwargs)
+    return wrapper
+
+
+def call_history(method: Callable) -> Callable:
+    """
+    Decorator that stores the history of
+    inputs and outputs for a particular function.
+    """
+    @functools.wraps(method)
+    def wrapper(self, *args):
+        # Define Redis keys for inputs and outputs
+        inputs_key = f"{method.__qualname__}:inputs"
+        outputs_key = f"{method.__qualname__}:outputs"
+
+        # Store input arguments in Redis
+        self._redis.rpush(inputs_key, str(args))
+
+        # Execute the original method and capture the output
+        result = method(self, *args)
+
+        # Store the output in Redis
+        self._redis.rpush(outputs_key, str(result))
+
+        # Return the result of the method call
+        return result
+
     return wrapper
 
 
