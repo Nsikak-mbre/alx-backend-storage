@@ -17,7 +17,7 @@ def count_calls(method: Callable) -> Callable:
     def wrapper(self, *args, **kwargs):
         # Increment the count for the method
         # using the qualified name as the key
-        key = f"{method.__qualname__}:count"
+        key = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
