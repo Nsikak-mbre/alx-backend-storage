@@ -14,7 +14,7 @@ def count_calls(method: Callable) -> Callable:
     Decorator that counts the number of times a method is called.
     """
     key = method.__qualname__
-    wraps(method)
+    @wraps(method)
 
     def wrapper(self, *args, **kwargs):
         # Increment the count for the method
@@ -29,7 +29,7 @@ def call_history(method: Callable) -> Callable:
     Decorator that stores the history of
     inputs and outputs for a particular function.
     """
-    wraps(method)
+    @wraps(method)
 
     def wrapper(self, *args):
         # Define Redis keys for inputs and outputs
